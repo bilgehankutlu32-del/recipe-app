@@ -20,16 +20,20 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
-
-    - name: Force Gradle 8.2.1 Wrapper
+    - name: Download and Setup Gradle 8.2.1 Manually
       run: |
-        gradle wrapper --gradle-version 8.2.1 --distribution-type bin
-        chmod +x gradlew
+        wget https://services.gradle.org/distributions/gradle-8.2.1-bin.zip
+        unzip gradle-8.2.1-bin.zip
+        echo "$PWD/gradle-8.2.1/bin" >> $GITHUB_PATH
 
-    - name: Build Debug APK with Gradle 8.2.1
-      run: ./gradlew assembleDebug
+    - name: Verify Gradle Version
+      run: gradle -v
+
+    - name: Build Debug APK
+      run: |
+        gradle wrapper --gradle-version 8.2.1
+        chmod +x gradlew
+        ./gradlew assembleDebug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
