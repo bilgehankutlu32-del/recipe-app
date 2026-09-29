@@ -13,6 +13,8 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -20,14 +22,11 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Download and Setup Gradle 8.2.1 Manually
-      run: |
-        wget https://services.gradle.org/distributions/gradle-8.2.1-bin.zip
-        unzip gradle-8.2.1-bin.zip
-        echo "$PWD/gradle-8.2.1/bin" >> $GITHUB_PATH
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
 
-    - name: Verify Gradle Version
-      run: gradle -v
+    - name: Verify Manifest Path Exists
+      run: ls -la app/src/main/
 
     - name: Build Debug APK
       run: |
