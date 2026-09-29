@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Lentil Soup",
+    "category": "Soup",
+    "calories": 180,
+    "vegan": true,
+    "ingredients": ["red lentil", "onion", "carrot", "butter", "salt"]
+  }
+]
