@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class RecipeAdapter(private val recipeList: List<Recipe>) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
+class RecipeAdapter(private var recipeList: List<Recipe>) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
     class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nameTextView: TextView = itemView.findViewById(R.id.textRecipeName)
@@ -21,10 +21,15 @@ class RecipeAdapter(private val recipeList: List<Recipe>) : RecyclerView.Adapter
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val recipe = recipeList[position]
         holder.nameTextView.text = recipe.name
-        holder.regionTextView.text = recipe.region
+        holder.regionTextView.text = recipe.cuisine + " Mutfagi"
     }
 
     override fun getItemCount(): Int {
         return recipeList.size
+    }
+
+    fun updateData(newData: List<Recipe>) {
+        recipeList = newData
+        notifyDataSetChanged()
     }
 }
