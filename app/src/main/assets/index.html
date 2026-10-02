@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Immersive Gastronomy & Nutrition Matcher</title>
+  <style>
+    :root {
+        --bg-main: #0b0f19;
+        --card-bg: rgba(15, 23, 42, 0.85);
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --accent-red: #991b1b;
+        --accent-gold: #d4af37;
+        --border-color: rgba(212, 175, 55, 0.25);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--text-main);
+        line-height: 1.5;
+        padding: 30px 16px;
+        background: linear-gradient(135deg, rgba(11, 15, 25, 0.92) 0%, rgba(153, 27, 27, 0.25) 100%), 
+                    url('https://images.unsplash.com/photo-1495195134817-aeb325a55b65?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+        background-size: cover;
+        min-height: 100vh;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    header {
+        text-align: center;
+        margin-bottom: 25px;
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 25px;
+        border-radius: 12px;
+        border-bottom: 1px solid var(--accent-red);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .logo { font-size: 2.2rem; font-weight: 800; color: #f8fafc; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    .purpose { color: var(--text-muted); font-size: 1.05rem; max-width: 700px; margin: 0 auto; font-style: italic; }
+
+    .search-panel { 
+        background: var(--card-bg); 
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 5px solid var(--accent-red); 
+        border-radius: 12px; 
+        padding: 24px; 
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); 
+        margin-bottom: 25px; 
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .input-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .input-row input { 
+        flex: 2; min-width: 200px; padding: 12px 16px; font-size: 15px; 
+        background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); 
+        color: #fff; border-radius: 8px; outline: none; 
+    }
+    .input-row input::placeholder { color: #64748b; }
+
+    .input-row select { 
+        flex: 1; min-width: 150px; padding: 12px; font-size: 15px; 
+        background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); 
+        color: #fff; border-radius: 8px; outline: none; cursor: pointer; 
+    }
+    
+    .btn-add { 
+        background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%); 
+        color: #fff; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 8px; 
+        padding: 0 24px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; 
+    }
+    .btn-add:hover { background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%); border-color: var(--accent-gold); }
+
+    .quick-filters {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .filter-chip {
+        background: rgba(30, 41, 59, 0.8);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        color: #f1f5f9;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-chip:hover {
+        background: var(--accent-red);
+        border-color: #f87171;
+        transform: translateY(-2px);
+    }
+
+    .user-ingredients-box { 
+        min-height: 48px; padding: 10px; background: rgba(15, 23, 42, 0.6); 
+        border: 1px dashed rgba(212, 175, 55, 0.3); border-radius: 8px; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; 
+    }
+    .tag { background-color: var(--accent-red); color: #fff; padding: 5px 12px; border-radius: 20px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+    .tag button { background: none; border: none; color: #fff; cursor: pointer; font-size: 15px; }
+
+    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: var(--card-bg); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.08); }
+    .results-header h2 { color: #f8fafc; font-size: 1.2rem; }
+
+    .recipes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+    
+    .recipe-card { 
+        background: var(--card-bg) !important; 
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 12px; padding: 20px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); 
+        display: flex; flex-direction: column; justify-content: space-between; 
+        transition: transform 0.3s ease, border-color 0.3s ease; 
+        cursor: pointer;
+    }
+    .recipe-card:hover { transform: translateY(-5px); border-color: var(--accent-gold) !important; }
+    
+    .badge-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .diet-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+    .diet-badge { font-size: 10px; text-transform: uppercase; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
+    
+    .diet-vegan { background: rgba(220, 252, 231, 0.2); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
+    .diet-vegetarian { background: rgba(254, 240, 138, 0.2); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3); }
+    .diet-fitness { background: rgba(224, 231, 255, 0.2); color: #818cf8; border: 1px solid rgba(129, 140, 248, 0.3); }
+    .diet-pescatarian { background: rgba(207, 250, 254, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .diet-gluten-free { background: rgba(255, 237, 213, 0.2); color: #fb923c; border: 1px solid rgba(251, 146, 60, 0.3); }
+    .diet-keto { background: rgba(243, 232, 255, 0.2); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3); }
+    .diet-dairy-free { background: rgba(252, 231, 243, 0.2); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3); }
+    
+    .match-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; background: rgba(254, 243, 199, 0.2); color: #fde047; border: 1px solid rgba(253, 224, 71, 0.3); }
+    .match-100 { background: rgba(220, 252, 231, 0.2); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
+    
+    .recipe-card h3 { font-size: 1.2rem; margin-bottom: 10px; color: #f8fafc; }
+    .ingredient-list { font-size: 13px; margin-bottom: 14px; }
+    .ing-tag { display: inline-block; padding: 2px 8px; margin: 2px; border-radius: 4px; font-size: 12px; }
+    .ing-have { background: rgba(153, 27, 27, 0.3); color: #fca5a5; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .ing-missing { background: rgba(30, 41, 59, 0.6); color: var(--text-muted); text-decoration: line-through; }
+
+    .nutrition-bar { background-color: rgba(15, 23, 42, 0.6); border-radius: 8px; padding: 10px; margin-top: 10px; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .macros { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; }
+
+    /* MODAL (DETAY PENCERESİ) STİLLERİ */
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(5, 7, 12, 0.85); backdrop-filter: blur(8px);
+        display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px;
+    }
+    .modal-content {
+        background: #0f172a; border: 1px solid rgba(212, 175, 55, 0.4);
+        border-radius: 16px; max-width: 650px; width: 100%; max-height: 90vh;
+        overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        position: relative; animation: modalIn 0.3s ease;
+    }
+    @keyframes modalIn {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .modal-img { width: 100%; height: 280px; object-fit: cover; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .modal-body { padding: 24px; }
+    .modal-close {
+        position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6);
+        color: #fff; border: 1px solid rgba(255,255,255,0.2); width: 36px; height: 36px;
+        border-radius: 50%; font-size: 18px; cursor: pointer; display: flex;
+        align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .modal-close:hover { background: var(--accent-red); border-color: #f87171; }
+    .modal-history {
+        margin-top: 16px; background: rgba(30, 41, 59, 0.5); padding: 15px;
+        border-radius: 8px; border-left: 3px solid var(--accent-gold); font-size: 13.5px; color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+ 
+<div class="container">
+  <header>
+    <div class="logo">🌍 Global Gastronomy Matcher</div>
+    <p class="purpose">Search recipes, filter by detailed dietary needs, and calculate macros instantly.</p>
+  </header>
+ 
+  <section class="search-panel">
+    <div class="input-row">
+      <input type="text" id="ingredient-input" placeholder="Ingredient or meal name...">
+      
+      <select id="cuisine-filter">
+        <option value="All">🌍 All Cuisines</option>
+        <option value="Turkish">🍢 Turkish</option>
+        <option value="Italian">🍝 Italian</option>
+        <option value="Mexican">🌮 Mexican</option>
+        <option value="Asian">🍜 Asian</option>
+        <option value="French">🥐 French</option>
+        <option value="Middle Eastern">🥙 Middle Eastern</option>
+        <option value="Japanese">🍣 Japanese</option>
+        <option value="Indian">🍛 Indian</option>
+        <option value="Mediterranean">🍋 Mediterranean</option>
+      </select>
+      
+      <select id="diet-filter">
+        <option value="All">🍽️ Any Diet</option>
+        <option value="Vegan">🌱 Vegan</option>
+        <option value="Vegetarian">🥗 Vegetarian</option>
+        <option value="Pescatarian">🐟 Pescatarian</option>
+        <option value="Gluten-Free">🌾 Gluten-Free</option>
+        <option value="Keto">🥩 Keto</option>
+        <option value="Dairy-Free">🥛 Dairy-Free</option>
+        <option value="Fitness">💪 High Protein</option>
+      </select>
+ 
+      <button class="btn-add" id="btn-add">Add</button>
+    </div>
+
+    <div class="quick-filters">
+        <button class="filter-chip" onclick="addIngredientAndSearch('egg')">🥚 Egg</button>
+        <button class="filter-chip" onclick="addIngredientAndSearch('meat')">🥩 Meat</button>
+        <button class="filter-chip" onclick="addIngredientAndSearch('garlic')">🧄 Garlic</button>
+        <button class="filter-chip" onclick="addIngredientAndSearch('tomato')">🍅 Tomato</button>
+        <button class="filter-chip" onclick="addIngredientAndSearch('cheese')">🧀 Cheese</button>
+    </div>
+
+    <div class="user-ingredients-box" id="user-ingredients-box"></div>
+  </section>
+ 
+  <div class="results-header">
+    <h2>Suggested Recipes (<span id="results-count">0</span>)</h2>
+  </div>
+  <section class="recipes-grid" id="recipes-grid"></section>
+</div>
+
+<!-- DETAY PENCERESİ (MODAL) -->
+<div class="modal-overlay" id="recipe-modal" onclick="closeModalOnBg(event)">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <img id="modal-img" class="modal-img" src="" alt="Recipe Image">
+    <div class="modal-body">
+      <h2 id="modal-title" style="color: #f8fafc; margin-bottom: 10px; font-size: 1.5rem;"></h2>
+      <div id="modal-diet" style="margin-bottom: 15px; display: flex; gap: 5px; flex-wrap: wrap;"></div>
+      <div id="modal-macros" class="nutrition-bar" style="margin-bottom: 15px;"></div>
+      <div id="modal-notes" style="font-size: 14px; line-height: 1.5; color: #cbd5e1; margin-bottom: 15px;"></div>
+      <div class="modal-history">
+        <b style="color: var(--accent-gold); display: block; margin-bottom: 5px;">📜 Gastronomic History & Culture:</b>
+        <span id="modal-history-text">This signature dish carries deep roots within its culinary tradition, refined through generations of regional ingredients and specialized preparation techniques.</span>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<script>
+  const backgrounds = {
+    "All": "https://images.unsplash.com/photo-1495195134817-aeb325a55b65?auto=format&fit=crop&w=2000&q=80",
+    "Turkish": "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=2000&q=80",
+    "Italian": "https://images.unsplash.com/photo-1498579150354-977475b7ea0b?auto=format&fit=crop&w=2000&q=80",
+    "Mexican": "https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&w=2000&q=80",
+    "Asian": "https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&w=2000&q=80",
+    "French": "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?auto=format&fit=crop&w=2000&q=80",
+    "Middle Eastern": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=2000&q=80",
+    "Japanese": "https://images.unsplash.com/photo-1580870058815-2eb10817c9b3?auto=format&fit=crop&w=2000&q=80",
+    "Indian": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=2000&q=80",
+    "Mediterranean": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=2000&q=80"
+  };
+
+  // Güvenli ve garantili çalışan fine-dining yemek görsel havuzu (Asla patlamaz)
+  const foodImages = [
+    'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=800&q=80'
+  ];
+
+function getRecipeImage(recipeName) {
+  // Doğrudan veritabanından (database.json'dan gelen) bu yemeği bul
+  const found = recipeDatabase.find(r => r.name === recipeName);
+  
+  // Eğer veritabanında bu yemek ve özel bir resmi varsa, onu bas!
+  if (found && found.image) {
+    return found.image;
+  }
+  
+  // Bulamazsa eski sisteme (yedek olarak) geri dönsün
+  let hash = 0;
+  for (let i = 0; i < recipeName.length; i++) {
+    hash = recipeName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % foodImages.length;
+  return foodImages[index];
+}
+ 
+  const cuisineFilterEl = document.getElementById("cuisine-filter");
+  const dietFilterEl = document.getElementById("diet-filter");
+  const inputEl = document.getElementById("ingredient-input");
+  const btnAdd = document.getElementById("btn-add");
+  const tagsBox = document.getElementById("user-ingredients-box");
+  const recipesGrid = document.getElementById("recipes-grid");
+  const resultsCount = document.getElementById("results-count");
+  const userIngredients = new Set();
+  
+  let recipeDatabase = [];
+ 
+  cuisineFilterEl.addEventListener("change", () => {
+    const cuisine = cuisineFilterEl.value;
+    const bgImg = backgrounds[cuisine] || backgrounds["All"];
+    document.body.style.background = `linear-gradient(135deg, rgba(11, 15, 25, 0.92) 0%, rgba(153, 27, 27, 0.25) 100%), url('${bgImg}') no-repeat center center fixed`;
+    document.body.style.backgroundSize = "cover";
+    evaluateRecipes();
+  });
+ 
+  dietFilterEl.addEventListener("change", evaluateRecipes);
+ 
+  function addIngredient(val) {
+    const cleaned = val.trim().toLowerCase();
+    if (!cleaned || userIngredients.has(cleaned)) return;
+    userIngredients.add(cleaned);
+    renderTags();
+    evaluateRecipes();
+  }
+
+  function addIngredientAndSearch(val) { addIngredient(val); }
+  function removeIngredient(item) { userIngredients.delete(item); renderTags(); evaluateRecipes(); }
+ 
+  function renderTags() {
+    tagsBox.innerHTML = "";
+    userIngredients.forEach(ing => {
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.innerHTML = `${ing} <button type="button" onclick="removeIngredient('${ing}')">&times;</button>`;
+      tagsBox.appendChild(tag);
+    });
+  }
+ 
+  function evaluateRecipes() {
+    const selectedCuisine = cuisineFilterEl.value;
+    const selectedDiet = dietFilterEl.value;
+    const userArray = Array.from(userIngredients);
+ 
+    if (!recipeDatabase || recipeDatabase.length === 0) return;
+ 
+    let viableRecipes = recipeDatabase;
+    
+    if (selectedDiet !== "All") {
+      viableRecipes = viableRecipes.filter(r => r.diet && r.diet.includes(selectedDiet));
+    }
+    if (selectedCuisine !== "All") {
+      viableRecipes = viableRecipes.filter(r => r.cuisine === selectedCuisine);
+    }
+ 
+    if (userIngredients.size === 0) {
+      recipesGrid.innerHTML = ``;
+      resultsCount.textContent = viableRecipes.length;
+      renderCards(viableRecipes.map(r => ({ ...r, matchPct: 0, matched: [], missing: r.ingredients })));
+      return;
+    }
+ 
+    const scoredRecipes = viableRecipes.map(recipe => {
+      const total = recipe.ingredients.length;
+      let matchedCount = 0;
+      const matched = [];
+      const missing = [];
+      const isMealMatch = userArray.some(ing => recipe.name.toLowerCase().includes(ing));
+ 
+      recipe.ingredients.forEach(ing => {
+        if (userIngredients.has(ing.toLowerCase())) {
+          matchedCount++; matched.push(ing);
+        } else {
+          missing.push(ing);
+        }
+      });
+ 
+      let matchPct = Math.round((matchedCount / total) * 100);
+      if (isMealMatch) { matchPct = 100; matchedCount = total; }
+      return { ...recipe, matchedCount, total, matched, missing, matchPct, isMealMatch };
+    });
+ 
+    const filtered = scoredRecipes
+      .filter(r => r.matchedCount > 0 || r.isMealMatch)
+      .sort((a, b) => b.matchPct - a.matchPct || b.matchedCount - a.matchedCount);
+ 
+    resultsCount.textContent = filtered.length;
+    renderCards(filtered);
+  }
+ 
+  function renderCards(recipes) {
+    if (recipes.length === 0) {
+      recipesGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); padding: 30px; border-radius: 12px; font-weight: 500; color: #94a3b8; border: 1px solid rgba(255,255,255,0.08);">No dishes found matching your filters.</div>`;
+      return;
+    }
+ 
+    recipesGrid.recipesData = recipes;
+
+    recipesGrid.innerHTML = recipes.map((item, index) => {
+      const badgeClass = item.matchPct === 100 ? "match-100" : "";
+      const badgeText = item.matchPct > 0 ? (item.isMealMatch ? "Meal Match!" : `${item.matchPct}% Match`) : "Recipe";
+      
+      const dietHtml = item.diet ? item.diet.map(d => {
+        const safeClass = d.toLowerCase().replace(/\s+/g, '-');
+        return `<span class="diet-badge diet-${safeClass}">${d}</span>`;
+      }).join("") : "";
+ 
+      return `
+        <div class="recipe-card" onclick="openRecipeModal(${index})">
+          <div class="card-top">
+            <div class="badge-bar">
+              <span style="font-size: 11px; font-weight: bold; color: #94a3b8;">${item.cuisine ? item.cuisine.toUpperCase() : 'GLOBAL'}</span>
+              ${item.matchPct > 0 ? `<span class="match-badge ${badgeClass}">${badgeText}</span>` : ''}
+            </div>
+            <h3>${item.name}</h3>
+            <div class="diet-tags">${dietHtml}</div>
+            <div class="ingredient-list">
+              ${item.matched ? item.matched.map(m => `<span class="ing-tag ing-have">✓ ${m}</span>`).join("") : ""}
+              ${item.missing ? item.missing.map(m => `<span class="ing-tag ing-missing">${m}</span>`).join("") : ""}
+            </div>
+          </div>
+          <div class="nutrition-bar">
+            <div class="macros">
+              <span style="color: #f87171;">🔥 ${item.cal} kcal</span>
+              <span style="color: #fbbf24;">🍗 P: ${item.p}g</span>
+              <span style="color: #34d399;">🍞 C: ${item.c}g</span>
+              <span style="color: #94a3b8;">🥑 F: ${item.f}g</span>
+            </div>
+          </div>
+          ${item.instructions ? `<div style="margin-top:12px; font-size:12.5px; line-height:1.4; color:#cbd5e1; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"><b>Chef's Note:</b> <i>${item.instructions}</i></div>` : ''}
+        </div>
+      `;
+    }).join("");
+  }
+
+  function openRecipeModal(index) {
+    const recipe = recipesGrid.recipesData[index];
+    if (!recipe) return;
+
+    document.getElementById("modal-img").src = getRecipeImage(recipe.name);
+    document.getElementById("modal-title").textContent = recipe.name;
+    
+    const dietHtml = recipe.diet ? recipe.diet.map(d => {
+      const safeClass = d.toLowerCase().replace(/\s+/g, '-');
+      return `<span class="diet-badge diet-${safeClass}">${d}</span>`;
+    }).join("") : "";
+    document.getElementById("modal-diet").innerHTML = dietHtml;
+
+    document.getElementById("modal-macros").innerHTML = `
+      <div class="macros">
+        <span style="color: #f87171;">🔥 ${recipe.cal} kcal</span>
+        <span style="color: #fbbf24;">🍗 Protein: ${recipe.p}g</span>
+        <span style="color: #34d399;">🍞 Carbs: ${recipe.c}g</span>
+        <span style="color: #94a3b8;">🥑 Fat: ${recipe.f}g</span>
+      </div>
+    `;
+
+    document.getElementById("modal-notes").innerHTML = recipe.instructions ? `<b>Chef's Note:</b> <i>${recipe.instructions}</i>` : "No special notes recorded for this preparation.";
+    document.getElementById("modal-history-text").textContent = `${recipe.name} reflects the traditional flavor profiles of ${recipe.cuisine} gastronomy, carefully optimized for balanced nutrition and fine-dining presentation.`;
+
+    document.getElementById("recipe-modal").style.display = "flex";
+  }
+
+  function closeModal() {
+    document.getElementById("recipe-modal").style.display = "none";
+  }
+
+  function closeModalOnBg(event) {
+    if (event.target.id === "recipe-modal") {
+      closeModal();
+    }
+  }
+ 
+  btnAdd.addEventListener("click", () => { addIngredient(inputEl.value); inputEl.value = ""; });
+  inputEl.addEventListener("keypress", (e) => { if (e.key === "Enter") { addIngredient(inputEl.value); inputEl.value = ""; } });
+  
+  fetch('database.json')
+    .then(response => response.json())
+    .then(data => {
+      recipeDatabase = data;
+      evaluateRecipes();
+    })
+    .catch(error => console.error("Veritabanı okunamadı şef:", error));
+</script>
+</body>
+</html>
