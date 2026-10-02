@@ -1,0 +1,71 @@
+/* --- LÜKS FİNE-DİNİNG KONSEPTİ CSS --- */
+
+/* Genel Sayfa ve Koyu Antrasit Arka Plan */
+body {
+    background-color: #0b0f19 !important; /* Derin gece mavisi/antrasit */
+    color: #f1f5f9 !important;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Üst Başlık (Header) - O eski yeşil şerit yerine asil lüks ton */
+header, .header-container, nav {
+    background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%) !important;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3) !important; /* İnce şık altın çizgisi */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+/* Ana Arama ve Filtre Alanı */
+.search-container, .filter-section, .controls {
+    background-color: rgba(30, 41, 59, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+/* Sonuçların Listelendiği Alan (Japonya veya filtre seçildiğinde beyazlamayı önleyen kural) */
+main, #results-container, .recipes-grid, .container {
+    background-color: #0b0f19 !important;
+    color: #f1f5f9 !important;
+}
+
+/* Tarif Kartları (Hijyenik, mat cam efekti - Glassmorphism) */
+.recipe-card {
+    background: rgba(30, 41, 59, 0.7) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    color: #f1f5f9 !important;
+}
+
+.recipe-card:hover {
+    border-color: rgba(212, 175, 55, 0.5) !important; /* Üzerine gelince zarif altın parıltı */
+    transform: translateY(-4px);
+}
+
+/* Metinler ve Başlıklar */
+h1, h2, h3, h4, .recipe-title {
+    color: #f8fafc !important;
+}
+
+p, span, .chef-note {
+    color: #cbd5e1 !important;
+}
+
+/* Butonlar (Cezbedici, lüks dokunuş) */
+button, .btn {
+    background: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    color: #f8fafc;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    border-color: rgba(212, 175, 55, 0.9);
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+}
